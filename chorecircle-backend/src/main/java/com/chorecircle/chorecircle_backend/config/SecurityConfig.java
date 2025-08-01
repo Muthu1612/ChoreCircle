@@ -3,6 +3,7 @@ package com.chorecircle.chorecircle_backend.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,6 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.chorecircle.chorecircle_backend.security.CustomUserDetailsService;
 import com.chorecircle.chorecircle_backend.security.JwtAuthenticationEntryPoint;
 import com.chorecircle.chorecircle_backend.security.JwtAuthenticationFilter;
+import com.chorecircle.chorecircle_backend.security.JwtTokenProvider;
 
 @Configuration
 @EnableWebSecurity
@@ -23,16 +25,15 @@ import com.chorecircle.chorecircle_backend.security.JwtAuthenticationFilter;
 public class SecurityConfig {
 
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    public SecurityConfig(JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint, 
-                         JwtAuthenticationFilter jwtAuthenticationFilter) {
+    public SecurityConfig(JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint) {
         this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter,
+                                         CustomUserDetailsService customUserDetailsService, 
+                                         PasswordEncoder passwordEncoder) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.and())
@@ -41,14 +42,26 @@ public class SecurityConfig {
                 .requestMatchers("/api/roles/initialize").permitAll()
                 .requestMatchers("/api/users/simple").permitAll()
                 .requestMatchers("/api/users/exists/**").permitAll()
+                .requestMatchers("/api/users/debug/**").permitAll()
                 .requestMatchers("/actuator/**").permitAll()
                 .anyRequest().authenticated()
             )
             .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authenticationProvider(authenticationProvider(customUserDetailsService, passwordEncoder))
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider(CustomUserDetailsService customUserDetailsService, 
+                                                           PasswordEncoder passwordEncoder) {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(customUserDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder);
+        authProvider.setHideUserNotFoundExceptions(false);
+        return authProvider;
     }
 
     @Bean
@@ -59,5 +72,11 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider, 
+                                                          CustomUserDetailsService customUserDetailsService) {
+        return new JwtAuthenticationFilter(jwtTokenProvider, customUserDetailsService);
     }
 } 

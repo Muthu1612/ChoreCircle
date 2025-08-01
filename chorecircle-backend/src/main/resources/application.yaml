@@ -4,9 +4,14 @@ spring:
   profiles:
     active: dev
 
+logging:
+  level:
+    com.chorecircle.chorecircle_backend.security: DEBUG
+    org.springframework.security: DEBUG
+
 app:
   jwt:
-    secret: your-super-secret-jwt-key-that-should-be-at-least-256-bits-long
+    secret: your-super-secret-jwt-key-that-should-be-at-least-512-bits-long-for-hs512-algorithm-to-work-properly-and-securely
     expiration: 86400000
 
 ---

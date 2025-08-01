@@ -186,20 +186,12 @@ public class UserService {
 
     // Get users by role
     public List<User> getUsersByRole(String roleName) {
-        Optional<Role> role = roleService.getRoleByName(roleName);
-        if (role.isPresent()) {
-            return role.get().getUsers().stream().toList();
-        }
-        return List.of();
+        return userRepository.findByRolesName(roleName);
     }
 
     // Get users by role ID
     public List<User> getUsersByRoleId(Long roleId) {
-        Optional<Role> role = roleService.getRoleById(roleId);
-        if (role.isPresent()) {
-            return role.get().getUsers().stream().toList();
-        }
-        return List.of();
+        return userRepository.findByRolesId(roleId);
     }
 
     // Check if user has specific role

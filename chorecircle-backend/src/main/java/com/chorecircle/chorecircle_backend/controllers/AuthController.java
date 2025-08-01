@@ -41,20 +41,30 @@ public class AuthController {
         try {
             String username = loginRequest.get("username");
             String password = loginRequest.get("password");
-
+            System.out.println("Username: " + username);
+            System.out.println("Password: " + password);
+            System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
             Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(username, password)
             );
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String jwt = tokenProvider.generateToken(authentication);
+            
+            System.out.println("JWT Token generated: " + jwt);
+            System.out.println("Authentication successful for user: " + username);
 
-            return ResponseEntity.ok(Map.of(
+            Map<String, Object> response = Map.of(
                 "token", jwt,
                 "type", "Bearer",
                 "message", "Login successful"
-            ));
+            );
+            
+            System.out.println("Sending response: " + response);
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
+            System.out.println("Authentication failed: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Invalid username or password"));
         }
@@ -108,5 +118,13 @@ public class AuthController {
             return ResponseEntity.badRequest()
                 .body(Map.of("error", e.getMessage()));
         }
+    }
+
+    @PostMapping("/test")
+    public ResponseEntity<?> testEndpoint() {
+        return ResponseEntity.ok(Map.of(
+            "message", "Test endpoint working",
+            "timestamp", System.currentTimeMillis()
+        ));
     }
 } 

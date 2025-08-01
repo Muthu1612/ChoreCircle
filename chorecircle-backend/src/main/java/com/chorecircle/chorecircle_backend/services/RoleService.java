@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.chorecircle.chorecircle_backend.entities.Role;
+import com.chorecircle.chorecircle_backend.entities.User;
 import com.chorecircle.chorecircle_backend.repositories.RoleRepository;
 import com.chorecircle.chorecircle_backend.repositories.UserRepository;
 
@@ -121,7 +122,9 @@ public class RoleService {
         if (roleOpt.isPresent()) {
             Role role = roleOpt.get();
             // Remove this role from all users
-            role.getUsers().forEach(user -> user.removeRole(role));
+            List<User> usersWithRole = userRepository.findByRolesId(roleId);
+            usersWithRole.forEach(user -> user.removeRole(role));
+            userRepository.saveAll(usersWithRole);
             roleRepository.deleteById(roleId);
             return true;
         }
@@ -134,7 +137,9 @@ public class RoleService {
         if (roleOpt.isPresent()) {
             Role role = roleOpt.get();
             // Remove this role from all users
-            role.getUsers().forEach(user -> user.removeRole(role));
+            List<User> usersWithRole = userRepository.findByRolesId(role.getId());
+            usersWithRole.forEach(user -> user.removeRole(role));
+            userRepository.saveAll(usersWithRole);
             roleRepository.delete(roleOpt.get());
             return true;
         }

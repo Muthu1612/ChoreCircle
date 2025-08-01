@@ -27,4 +27,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
     
     @Query("SELECT u FROM User u WHERE u.username LIKE %:keyword%")
     List<User> findByUsernameContaining(@Param("keyword") String keyword);
+    
+    @Query("SELECT DISTINCT u FROM User u JOIN u.roles r WHERE r.name = :roleName")
+    List<User> findByRolesName(@Param("roleName") String roleName);
+    
+    @Query("SELECT DISTINCT u FROM User u JOIN u.roles r WHERE r.id = :roleId")
+    List<User> findByRolesId(@Param("roleId") Long roleId);
 }

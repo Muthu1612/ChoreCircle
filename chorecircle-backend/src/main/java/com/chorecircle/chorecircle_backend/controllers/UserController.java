@@ -246,4 +246,23 @@ public class UserController {
         Set<Role> roles = userService.getUserRolesByUsername(username);
         return ResponseEntity.ok(roles);
     }
+
+    // Debug endpoint to check user details
+    @GetMapping("/debug/{username}")
+    public ResponseEntity<?> debugUser(@PathVariable String username) {
+        try {
+            return userService.getUserByUsername(username)
+                .map(user -> ResponseEntity.ok(Map.of(
+                    "id", user.getId(),
+                    "username", user.getUsername(),
+                    "enabled", user.isEnabled(),
+                    "password", user.getPassword(),
+                    "roles", user.getRoles().stream().map(role -> role.getName()).toList()
+                )))
+                .orElse(ResponseEntity.notFound().build());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                .body(Map.of("error", e.getMessage()));
+        }
+    }
 } 

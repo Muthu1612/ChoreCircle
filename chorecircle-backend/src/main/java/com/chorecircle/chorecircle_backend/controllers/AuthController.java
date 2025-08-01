@@ -41,9 +41,6 @@ public class AuthController {
         try {
             String username = loginRequest.get("username");
             String password = loginRequest.get("password");
-            System.out.println("Username: " + username);
-            System.out.println("Password: " + password);
-            System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
             Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(username, password)
             );
@@ -118,13 +115,5 @@ public class AuthController {
             return ResponseEntity.badRequest()
                 .body(Map.of("error", e.getMessage()));
         }
-    }
-
-    @PostMapping("/test")
-    public ResponseEntity<?> testEndpoint() {
-        return ResponseEntity.ok(Map.of(
-            "message", "Test endpoint working",
-            "timestamp", System.currentTimeMillis()
-        ));
     }
 } 

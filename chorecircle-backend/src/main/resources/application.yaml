@@ -21,7 +21,7 @@ spring:
     activate:
       on-profile: dev
   datasource:
-    url: jdbc:postgresql://localhost:5432/local
+    url: jdbc:postgresql://localhost:5432/chorecircle
     username: muthu
     password: muthu
   jpa:
@@ -37,7 +37,7 @@ spring:
     activate:
       on-profile: prod
   datasource:
-    url: jdbc:postgresql://localhost:5432/local
+    url: jdbc:postgresql://localhost:5432/chorecircle
     username: muthu
     password: muthu
   jpa:

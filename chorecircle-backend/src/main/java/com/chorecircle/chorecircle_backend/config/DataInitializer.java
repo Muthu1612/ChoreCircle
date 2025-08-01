@@ -40,13 +40,11 @@ public class DataInitializer implements CommandLineRunner {
     private void initializeAdminUser() {
         try {
             String adminUsername = "admin";
-            String adminPassword = "admin123";
+            String adminPassword = "admin";
 
             if (!userService.userExists(adminUsername)) {
                 userService.createUser(adminUsername, adminPassword, Set.of("ADMIN"));
-                System.out.println("Admin user created successfully");
-                System.out.println("Username: " + adminUsername);
-                System.out.println("Password: " + adminPassword);
+                System.out.println("Initialized admin user successfully");
             } else {
                 System.out.println("Admin user already exists");
             }

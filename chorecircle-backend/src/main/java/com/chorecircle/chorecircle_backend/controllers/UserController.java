@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,6 +35,7 @@ public class UserController {
 
     // Create a new user
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> createUser(@RequestBody Map<String, Object> request) {
         try {
             String username = (String) request.get("username");
@@ -50,6 +52,7 @@ public class UserController {
 
     // Get user by ID
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     public ResponseEntity<?> getUserById(@PathVariable Long id) {
         return userService.getUserById(id)
                 .map(user -> ResponseEntity.ok(user))
@@ -58,6 +61,7 @@ public class UserController {
 
     // Get user by username
     @GetMapping("/username/{username}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     public ResponseEntity<?> getUserByUsername(@PathVariable String username) {
         return userService.getUserByUsername(username)
                 .map(user -> ResponseEntity.ok(user))
@@ -66,6 +70,7 @@ public class UserController {
 
     // Get all users
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
@@ -73,6 +78,7 @@ public class UserController {
 
     // Search users by username
     @GetMapping("/search")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     public ResponseEntity<List<User>> searchUsers(@RequestParam String keyword) {
         List<User> users = userService.searchUsersByUsername(keyword);
         return ResponseEntity.ok(users);
@@ -80,6 +86,7 @@ public class UserController {
 
     // Update user password
     @PutMapping("/{id}/password")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updatePassword(@PathVariable Long id, @RequestBody Map<String, String> request) {
         String newPassword = request.get("password");
         boolean updated = userService.updatePassword(id, newPassword);
@@ -93,6 +100,7 @@ public class UserController {
 
     // Update user password by username
     @PutMapping("/username/{username}/password")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updatePasswordByUsername(@PathVariable String username, @RequestBody Map<String, String> request) {
         String newPassword = request.get("password");
         boolean updated = userService.updatePasswordByUsername(username, newPassword);
@@ -106,6 +114,7 @@ public class UserController {
 
     // Update user roles
     @PutMapping("/{id}/roles")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updateUserRoles(@PathVariable Long id, @RequestBody Map<String, Set<String>> request) {
         try {
             Set<String> roleNames = request.get("roles");
@@ -123,6 +132,7 @@ public class UserController {
 
     // Add role to user
     @PostMapping("/{id}/roles")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> addRoleToUser(@PathVariable Long id, @RequestBody Map<String, String> request) {
         String roleName = request.get("role");
         boolean added = userService.addRoleToUser(id, roleName);
@@ -136,6 +146,7 @@ public class UserController {
 
     // Remove role from user
     @DeleteMapping("/{id}/roles")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> removeRoleFromUser(@PathVariable Long id, @RequestBody Map<String, String> request) {
         String roleName = request.get("role");
         boolean removed = userService.removeRoleFromUser(id, roleName);
@@ -149,6 +160,7 @@ public class UserController {
 
     // Enable/disable user
     @PutMapping("/{id}/enabled")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updateUserEnabledStatus(@PathVariable Long id, @RequestBody Map<String, Boolean> request) {
         Boolean enabled = request.get("enabled");
         boolean updated = userService.updateUserEnabledStatus(id, enabled);
@@ -162,6 +174,7 @@ public class UserController {
 
     // Delete user by ID
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         boolean deleted = userService.deleteUser(id);
         
@@ -174,6 +187,7 @@ public class UserController {
 
     // Delete user by username
     @DeleteMapping("/username/{username}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteUserByUsername(@PathVariable String username) {
         boolean deleted = userService.deleteUserByUsername(username);
         
@@ -186,6 +200,7 @@ public class UserController {
 
     // Check if user exists
     @GetMapping("/exists/{username}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     public ResponseEntity<Map<String, Boolean>> userExists(@PathVariable String username) {
         boolean exists = userService.userExists(username);
         return ResponseEntity.ok(Map.of("exists", exists));
@@ -193,6 +208,7 @@ public class UserController {
 
     // Get users by role
     @GetMapping("/by-role/{roleName}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     public ResponseEntity<List<User>> getUsersByRole(@PathVariable String roleName) {
         List<User> users = userService.getUsersByRole(roleName);
         return ResponseEntity.ok(users);
@@ -200,6 +216,7 @@ public class UserController {
 
     // Get users by role ID
     @GetMapping("/by-role-id/{roleId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     public ResponseEntity<List<User>> getUsersByRoleId(@PathVariable Long roleId) {
         List<User> users = userService.getUsersByRoleId(roleId);
         return ResponseEntity.ok(users);
@@ -207,6 +224,7 @@ public class UserController {
 
     // Check if user has specific role
     @GetMapping("/{userId}/has-role/{roleName}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     public ResponseEntity<Map<String, Boolean>> userHasRole(@PathVariable Long userId, @PathVariable String roleName) {
         boolean hasRole = userService.userHasRole(userId, roleName);
         return ResponseEntity.ok(Map.of("hasRole", hasRole));
@@ -214,6 +232,7 @@ public class UserController {
 
     // Check if user has specific role by username
     @GetMapping("/username/{username}/has-role/{roleName}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     public ResponseEntity<Map<String, Boolean>> userHasRoleByUsername(@PathVariable String username, @PathVariable String roleName) {
         boolean hasRole = userService.userHasRoleByUsername(username, roleName);
         return ResponseEntity.ok(Map.of("hasRole", hasRole));
@@ -221,6 +240,7 @@ public class UserController {
 
     // Get user roles
     @GetMapping("/{userId}/roles")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     public ResponseEntity<Set<Role>> getUserRoles(@PathVariable Long userId) {
         Set<Role> roles = userService.getUserRoles(userId);
         return ResponseEntity.ok(roles);
@@ -228,6 +248,7 @@ public class UserController {
 
     // Get user roles by username
     @GetMapping("/username/{username}/roles")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     public ResponseEntity<Set<Role>> getUserRolesByUsername(@PathVariable String username) {
         Set<Role> roles = userService.getUserRolesByUsername(username);
         return ResponseEntity.ok(roles);

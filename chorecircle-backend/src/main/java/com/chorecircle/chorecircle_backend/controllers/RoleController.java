@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +33,7 @@ public class RoleController {
 
     // Create a new role
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> createRole(@RequestBody Map<String, String> request) {
         try {
             String name = request.get("name");
@@ -44,6 +46,7 @@ public class RoleController {
 
     // Get role by ID
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     public ResponseEntity<?> getRoleById(@PathVariable Long id) {
         return roleService.getRoleById(id)
                 .map(role -> ResponseEntity.ok(role))
@@ -52,6 +55,7 @@ public class RoleController {
 
     // Get role by name
     @GetMapping("/name/{name}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     public ResponseEntity<?> getRoleByName(@PathVariable String name) {
         return roleService.getRoleByName(name)
                 .map(role -> ResponseEntity.ok(role))
@@ -60,6 +64,7 @@ public class RoleController {
 
     // Get all roles
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     public ResponseEntity<List<Role>> getAllRoles() {
         List<Role> roles = roleService.getAllRoles();
         return ResponseEntity.ok(roles);
@@ -67,6 +72,7 @@ public class RoleController {
 
     // Get all roles ordered by name
     @GetMapping("/ordered")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     public ResponseEntity<List<Role>> getAllRolesOrderByName() {
         List<Role> roles = roleService.getAllRolesOrderByName();
         return ResponseEntity.ok(roles);
@@ -74,6 +80,7 @@ public class RoleController {
 
     // Search roles by name
     @GetMapping("/search")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     public ResponseEntity<List<Role>> searchRoles(@RequestParam String keyword) {
         List<Role> roles = roleService.searchRolesByName(keyword);
         return ResponseEntity.ok(roles);
@@ -81,6 +88,7 @@ public class RoleController {
 
     // Update role name by ID
     @PutMapping("/{id}/name")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updateRoleName(@PathVariable Long id, @RequestBody Map<String, String> request) {
         try {
             String newName = request.get("name");
@@ -98,6 +106,7 @@ public class RoleController {
 
     // Update role name by current name
     @PutMapping("/name/{currentName}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updateRoleNameByName(@PathVariable String currentName, @RequestBody Map<String, String> request) {
         try {
             String newName = request.get("name");
@@ -115,6 +124,7 @@ public class RoleController {
 
     // Delete role by ID
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteRole(@PathVariable Long id) {
         try {
             boolean deleted = roleService.deleteRole(id);
@@ -131,6 +141,7 @@ public class RoleController {
 
     // Delete role by name
     @DeleteMapping("/name/{name}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteRoleByName(@PathVariable String name) {
         try {
             boolean deleted = roleService.deleteRoleByName(name);
@@ -147,6 +158,7 @@ public class RoleController {
 
     // Force delete role by ID (removes from all users first)
     @DeleteMapping("/{id}/force")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> forceDeleteRole(@PathVariable Long id) {
         try {
             boolean deleted = roleService.forceDeleteRole(id);
@@ -163,6 +175,7 @@ public class RoleController {
 
     // Force delete role by name
     @DeleteMapping("/name/{name}/force")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> forceDeleteRoleByName(@PathVariable String name) {
         try {
             boolean deleted = roleService.forceDeleteRoleByName(name);
@@ -179,6 +192,7 @@ public class RoleController {
 
     // Check if role exists
     @GetMapping("/exists/{name}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     public ResponseEntity<Map<String, Boolean>> roleExists(@PathVariable String name) {
         boolean exists = roleService.roleExists(name);
         return ResponseEntity.ok(Map.of("exists", exists));
@@ -186,6 +200,7 @@ public class RoleController {
 
     // Get count of users with a specific role
     @GetMapping("/{id}/users-count")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     public ResponseEntity<Map<String, Long>> getUsersCountWithRole(@PathVariable Long id) {
         long count = roleService.getUsersCountWithRole(id);
         return ResponseEntity.ok(Map.of("count", count));
@@ -193,6 +208,7 @@ public class RoleController {
 
     // Get count of users with a specific role by name
     @GetMapping("/name/{name}/users-count")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     public ResponseEntity<Map<String, Long>> getUsersCountWithRoleByName(@PathVariable String name) {
         long count = roleService.getUsersCountWithRoleByName(name);
         return ResponseEntity.ok(Map.of("count", count));

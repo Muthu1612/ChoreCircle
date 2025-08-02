@@ -48,20 +48,6 @@ public class UserController {
         }
     }
 
-    // Create a new user with default role
-    @PostMapping("/simple")
-    public ResponseEntity<?> createSimpleUser(@RequestBody Map<String, String> request) {
-        try {
-            String username = request.get("username");
-            String password = request.get("password");
-
-            User user = userService.createUser(username, password);
-            return ResponseEntity.status(HttpStatus.CREATED).body(user);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-        }
-    }
-
     // Get user by ID
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserById(@PathVariable Long id) {
@@ -245,24 +231,5 @@ public class UserController {
     public ResponseEntity<Set<Role>> getUserRolesByUsername(@PathVariable String username) {
         Set<Role> roles = userService.getUserRolesByUsername(username);
         return ResponseEntity.ok(roles);
-    }
-
-    // Debug endpoint to check user details
-    @GetMapping("/debug/{username}")
-    public ResponseEntity<?> debugUser(@PathVariable String username) {
-        try {
-            return userService.getUserByUsername(username)
-                .map(user -> ResponseEntity.ok(Map.of(
-                    "id", user.getId(),
-                    "username", user.getUsername(),
-                    "enabled", user.isEnabled(),
-                    "password", user.getPassword(),
-                    "roles", user.getRoles().stream().map(role -> role.getName()).toList()
-                )))
-                .orElse(ResponseEntity.notFound().build());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                .body(Map.of("error", e.getMessage()));
-        }
     }
 } 

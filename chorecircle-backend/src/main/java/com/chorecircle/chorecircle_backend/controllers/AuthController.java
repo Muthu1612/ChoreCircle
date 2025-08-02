@@ -1,7 +1,6 @@
 package com.chorecircle.chorecircle_backend.controllers;
 
 import java.util.Map;
-import java.util.Set;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -83,31 +82,6 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.CREATED)
                 .body(Map.of(
                     "message", "User registered successfully",
-                    "userId", user.getId(),
-                    "username", user.getUsername()
-                ));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                .body(Map.of("error", e.getMessage()));
-        }
-    }
-
-    @PostMapping("/register-admin")
-    public ResponseEntity<?> registerAdmin(@RequestBody Map<String, String> registerRequest) {
-        try {
-            String username = registerRequest.get("username");
-            String password = registerRequest.get("password");
-
-            if (userService.userExists(username)) {
-                return ResponseEntity.badRequest()
-                    .body(Map.of("error", "Username already exists"));
-            }
-
-            User user = userService.createUser(username, password, Set.of("ADMIN"));
-            
-            return ResponseEntity.status(HttpStatus.CREATED)
-                .body(Map.of(
-                    "message", "Admin user registered successfully",
                     "userId", user.getId(),
                     "username", user.getUsername()
                 ));

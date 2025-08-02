@@ -198,10 +198,10 @@ public class RoleController {
         return ResponseEntity.ok(Map.of("count", count));
     }
 
-    // Initialize default roles
-    @PostMapping("/initialize")
-    public ResponseEntity<Map<String, String>> initializeDefaultRoles() {
-        roleService.initializeDefaultRoles();
-        return ResponseEntity.ok(Map.of("message", "Default roles initialized successfully"));
-    }
+    // // Initialize default roles
+    // @PostMapping("/initialize")
+    // public ResponseEntity<Map<String, String>> initializeDefaultRoles() {
+    //     roleService.initializeDefaultRoles();
+    //     return ResponseEntity.ok(Map.of("message", "Default roles initialized successfully"));
+    // }
 } 

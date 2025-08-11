@@ -41,8 +41,6 @@ public class SecurityConfig {
                 // Public endpoints - no authentication required
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/actuator/**").permitAll()
-                .requestMatchers("/api/users/simple").permitAll()
-                .requestMatchers("/api/users/debug/**").permitAll()
                 
                 // Admin and Moderator only endpoints - User management (read operations)
                 .requestMatchers("GET", "/api/users").hasAnyRole("ADMIN", "MODERATOR") // GET all users
